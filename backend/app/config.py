@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 
-# المسار الأساسي للمشروع (SANAD)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent  # 👈 يرتفع 3 مستويات
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# المسار الصحيح بعد التأكد من التشخيص
 DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "hadith-json-main", "db")
 
 print(f"🔍 المسار الكامل للبيانات: {DATA_PATH}")
