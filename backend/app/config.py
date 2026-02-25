@@ -1,45 +1,27 @@
+import os
 from pathlib import Path
 
-# هذا يشير إلى /app/app
-BASE_DIR = Path(__file__).resolve().parent
-
-# هذا يصعد إلى /app
-PROJECT_ROOT = BASE_DIR.parent
-
-# المسار الحقيقي داخل Docker
-DATA_PATH = PROJECT_ROOT / "backend" / "data" / "raw" / "hadith-json-main" / "db"
-
-print(f"🔍 DATA_PATH: {DATA_PATH}")
-
-BY_BOOK_PATH = DATA_PATH / "by_book"
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "hadith-json-main", "db")
+BY_BOOK_PATH = os.path.join(DATA_PATH, "by_book")
 
 BOOK_CATEGORIES = ["the_9_books", "forties", "other_books"]
 
-
 def get_all_book_paths():
+    """إرجاع جميع ملفات JSON في مجلد by_book"""
     book_paths = []
-
-    print(f"🔍 Searching in: {BY_BOOK_PATH}")
-
-    if not BY_BOOK_PATH.exists():
-        print("❌ by_book folder not found")
-        return book_paths
-
     for category in BOOK_CATEGORIES:
-        category_path = BY_BOOK_PATH / category
-
-        if category_path.exists():
-            files = list(category_path.glob("*.json"))
-            print(f"✅ Found {len(files)} files in {category}")
-
-            for file in files:
-                book_paths.append({
-                    "path": str(file),
-                    "category": category,
-                    "book_id": file.stem
-                })
+        category_path = os.path.join(BY_BOOK_PATH, category)
+        if os.path.exists(category_path):
+            for file in os.listdir(category_path):
+                if file.endswith('.json'):
+                    full_path = os.path.join(category_path, file)
+                    print(f"✅ Found: {category}/{file}")
+                    book_paths.append({
+                        'path': full_path,
+                        'category': category,
+                        'book_id': file.replace('.json', '')
+                    })
         else:
-            print(f"⚠️ Category not found: {category_path}")
-
-    print(f"📊 Total books found: {len(book_paths)}")
+            print(f"⚠️ مجلد غير موجود: {category_path}")
     return book_paths
