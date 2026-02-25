@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routes import books, hadiths, search
@@ -5,9 +6,19 @@ from .services.hadith_service import hadith_service
 
 app = FastAPI(title="SANAD ENGINE", version="2.0")
 
+# قراءة رابط الواجهة من متغير البيئة، مع استخدام localhost كخيار احتياطي للتطوير
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
+# قائمة المواقع المسموح لها بالاتصال بالـ API
+ALLOWED_ORIGINS = [
+    FRONTEND_URL,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -15,7 +26,7 @@ app.add_middleware(
 
 app.include_router(books.router)
 app.include_router(hadiths.router)
-app.include_router(search.router)  # إضافة البحث
+app.include_router(search.router)
 
 @app.get("/")
 def root():
