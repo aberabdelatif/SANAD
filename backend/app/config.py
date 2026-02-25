@@ -1,41 +1,48 @@
 import os
 from pathlib import Path
 
-# تحديد المسار الأساسي
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent  # عدنا إلى مجلد SANAD
+DATA_PATH = os.path.join(BASE_DIR, "données", "brut", "hadith-json-main", "base de données")
 
-# استخدام متغير البيئة إذا موجود، وإلا استخدم المسار الافتراضي
-DATA_PATH = os.environ.get("DATA_PATH", str(BASE_DIR / "data"))
+print(f"🔍 المسار الكامل للبيانات: {DATA_PATH}")
 
-# المسار الكامل لملفات JSON
-RAW_DATA_PATH = os.path.join(DATA_PATH, "raw", "hadith-json-main", "db")
+# التحقق من وجود المجلد
+if os.path.exists(DATA_PATH):
+    print(f"✅ المجلد موجود: {DATA_PATH}")
+else:
+    print(f"❌ المجلد غير موجود: {DATA_PATH}")
 
+BY_BOOK_PATH = os.path.join(DATA_PATH, "par_livre")
 BOOK_CATEGORIES = ["the_9_books", "forties", "other_books"]
 
 def get_all_book_paths():
-    """إرجاع جميع ملفات JSON في مجلد by_book"""
+    """إرجاع جميع ملفات JSON في مجلد par_livre"""
     book_paths = []
-    by_book_path = os.path.join(RAW_DATA_PATH, "by_book")
     
-    print(f"🔍 البحث عن البيانات في: {by_book_path}")
+    print(f"🔍 البحث في: {BY_BOOK_PATH}")
     
-    if not os.path.exists(by_book_path):
-        print(f"❌ المسار غير موجود: {by_book_path}")
+    if not os.path.exists(BY_BOOK_PATH):
+        print(f"❌ المسار غير موجود: {BY_BOOK_PATH}")
         return book_paths
     
     for category in BOOK_CATEGORIES:
-        category_path = os.path.join(by_book_path, category)
+        category_path = os.path.join(BY_BOOK_PATH, category)
+        print(f"📁 فحص مجلد: {category_path}")
+        
         if os.path.exists(category_path):
-            for file in os.listdir(category_path):
-                if file.endswith('.json'):
-                    full_path = os.path.join(category_path, file)
-                    print(f"✅ Found: {category}/{file}")
-                    book_paths.append({
-                        'path': full_path,
-                        'category': category,
-                        'book_id': file.replace('.json', '')
-                    })
+            files = os.listdir(category_path)
+            json_files = [f for f in files if f.endswith('.json')]
+            print(f"   ✅ وجدنا {len(json_files)} ملف JSON في {category}")
+            
+            for file in json_files:
+                full_path = os.path.join(category_path, file)
+                book_paths.append({
+                    'path': full_path,
+                    'category': category,
+                    'book_id': file.replace('.json', '')
+                })
         else:
             print(f"⚠️ مجلد غير موجود: {category_path}")
     
+    print(f"📊 إجمالي ملفات JSON التي وجدناها: {len(book_paths)}")
     return book_paths
