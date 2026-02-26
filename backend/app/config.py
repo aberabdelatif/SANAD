@@ -1,20 +1,27 @@
 from pathlib import Path
 import os
 
-# جذر المشروع (backend)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# مجلد هذا الملف (app/)
+APP_DIR = Path(__file__).resolve().parent
 
-# المسار الصحيح للبيانات داخل المشروع
-DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "hadith-json-main", "db")
+# مجلد backend/
+BACKEND_DIR = APP_DIR.parent
+
+# جذر المشروع داخل الحاوية (لأننا ننسخ data بجانب app)
+PROJECT_ROOT = BACKEND_DIR
+
+# مسار البيانات الصحيح داخل Docker
+DATA_PATH = os.path.join(PROJECT_ROOT, "data", "raw", "hadith-json-main", "db")
 
 BY_BOOK_PATH = os.path.join(DATA_PATH, "by_book")
 
 BOOK_CATEGORIES = ["the_9_books", "forties", "other_books"]
 
+
 def get_all_book_paths():
     book_paths = []
 
-    print("🔍 BASE_DIR:", BASE_DIR)
+    print("🔍 PROJECT_ROOT:", PROJECT_ROOT)
     print("🔍 DATA_PATH:", DATA_PATH)
 
     for category in BOOK_CATEGORIES:
