@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // استخدم URL الخاص بالاستضافة إذا لم يكن هناك متغير بيئي
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://sanad-yq9s.onrender.com',
+  baseURL: 'https://sanad-yq9s.onrender.com',
   timeout: 30000,
 });
 
@@ -44,3 +44,4 @@ export const api = {
 };
 
 export default API;
+
