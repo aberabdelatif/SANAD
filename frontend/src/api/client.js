@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'https://sanad-yq9s.onrender.com/',
   timeout: 30000,
 });
 
@@ -41,5 +41,6 @@ export const api = {
   // الإحصائيات
   getStats: () => API.get('/stats'),
 };
+
 
 export default API;
