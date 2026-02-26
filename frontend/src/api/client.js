@@ -1,78 +1,46 @@
- /**
- * تنسيق النصوص والأرقام
- */
+import axios from 'axios';
 
-// تنسيق رقم الحديث
-export const formatHadithNumber = (number, bookId = '') => {
-  if (!number) return '';
-  return `#${number}`;
-};
+// استخدم URL الخاص بالاستضافة إذا لم يكن هناك متغير بيئي
+const API = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'https://sanad-yq9s.onrender.com',
+  timeout: 30000,
+});
 
-// تنسيق اسم الراوي
-export const formatNarrator = (narrator) => {
-  if (!narrator) return 'غير معروف';
-  return narrator;
-};
-
-// تنسيق درجة الحديث
-export const formatGrade = (grade) => {
-  const grades = {
-    'sahih': 'صحيح',
-    'hasan': 'حسن',
-    'daif': 'ضعيف',
-    'sahih': 'Sahih',
-    'hasan': 'Hasan',
-    'daif': 'Daif'
-  };
-  return grades[grade?.toLowerCase()] || grade || 'غير محدد';
-};
-
-// الحصول على لون الدرجة
-export const getGradeColor = (grade) => {
-  const gradeLower = grade?.toLowerCase() || '';
-  if (gradeLower.includes('صحيح') || gradeLower.includes('sahih')) {
-    return 'text-green-600 bg-green-100';
+API.interceptors.response.use(
+  response => response.data,
+  error => {
+    console.error('API Error:', error);
+    throw error;
   }
-  if (gradeLower.includes('حسن') || gradeLower.includes('hasan')) {
-    return 'text-blue-600 bg-blue-100';
-  }
-  if (gradeLower.includes('ضعيف') || gradeLower.includes('daif')) {
-    return 'text-yellow-600 bg-yellow-100';
-  }
-  return 'text-gray-600 bg-gray-100';
+);
+
+export const api = {
+  // الكتب
+  getBooks: () => API.get('/books'),
+  getBook: (id) => API.get(`/books/${id}`),
+
+  // الأحاديث
+  getAllHadiths: () => API.get('/hadiths'),
+  getHadith: (id) => API.get(`/hadiths/${id}`),
+  getHadithsByBook: (bookId) => API.get(`/hadiths/book/${bookId}`),
+
+  // البحث
+  searchSimple: (params) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return API.get(`/search/simple?${queryParams}`);
+  },
+
+  advancedSearch: (params) => {
+    const queryParams = new URLSearchParams(params).toString();
+    return API.get(`/search?${queryParams}`);
+  },
+
+  getSuggestions: (q) => API.get(`/search/suggestions?q=${q}`),
+
+  getFilterOptions: () => API.get('/search/filters'),
+
+  // الإحصائيات
+  getStats: () => API.get('/stats'),
 };
 
-// اختصار النص الطويل
-export const truncateText = (text, maxLength = 200) => {
-  if (!text) return '';
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + '...';
-};
-
-// تنسيق التاريخ
-export const formatDate = (date) => {
-  if (!date) return '';
-  return new Date(date).toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
-
-// إنشاء Slug من النص
-export const createSlug = (text) => {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s]/gi, '')
-    .replace(/\s+/g, '-');
-};
-
-// تنظيف النص للبحث
-export const normalizeForSearch = (text) => {
-  return text
-    .toLowerCase()
-    .replace(/[أإآ]/g, 'ا')
-    .replace(/[ة]/g, 'ه')
-    .replace(/[ى]/g, 'ي')
-    .replace(/[^a-z\u0600-\u06FF\s]/gi, '');
-};
+export default API;
