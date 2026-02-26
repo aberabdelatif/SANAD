@@ -7,7 +7,10 @@ app = FastAPI(title="SANAD ENGINE", version="2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://sanad-1.onrender.com/"],
+    allow_origins=[
+        "https://sanad-1.onrender.com",  # ✅ بدون شرطة مائلة
+        "https://sanad-frontend.onrender.com",  # أضف الرابط الثاني أيضاً
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -15,7 +18,7 @@ app.add_middleware(
 
 app.include_router(books.router)
 app.include_router(hadiths.router)
-app.include_router(search.router)  # إضافة البحث
+app.include_router(search.router)
 
 @app.get("/")
 def root():
@@ -38,4 +41,3 @@ def stats():
             "other_books": len([b for b in books if b.category == 'other_books'])
         }
     }
-
